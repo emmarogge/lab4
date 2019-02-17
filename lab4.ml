@@ -71,7 +71,7 @@ Now reimplement prods using map and your uncurried times function. Why
 do you need the uncurried times function?
 ......................................................................*)
 
-let rec prods (lst : (int * int) list) : int list =
+let prods (lst : (int * int) list) : int list =
   List.map (fun (x, y) -> times (x, y)) lst;; 
 
 (*======================================================================
@@ -119,8 +119,13 @@ does so. What exception should it raise? (See Section 10.2 in the
 textbook for some advice.)
 ......................................................................*)
 
-let max_list (lst : int list) : int =
-  failwith "max_list not implemented" ;;
+let rec max_list (lst : int list) : int =
+  assert (lst <> []);
+  let helper : int =
+  match lst with
+    | [] -> 0
+    | head::tail -> max head (max_list tail) in
+  helper ;;
      
 (*......................................................................
 Exercise 6: Write a function min_option to return the smaller of two
@@ -131,7 +136,16 @@ are handled; no nonexhaustive match warnings!
 ......................................................................*)
 
 let min_option (x : int option) (y : int option) : int option =
-  failwith "min_option not implemented" ;;
+(*   if x = None && y = None then None
+    else if y = None then x
+    else if x = None then y
+    else min x y *)
+  match x, y with
+  | None,      None       -> None
+  | None,      Some right -> Some right
+  | Some left, None       -> Some left
+  | Some left, Some right -> Some (min left right) ;;
+
      
 (*......................................................................
 Exercise 7: Write a function plus_option to return the sum of two int
@@ -140,7 +154,11 @@ return the other.
 ......................................................................*)
 
 let plus_option (x : int option) (y : int option) : int option =
-  failwith "plus_option not implemented" ;;
+  match x, y with
+  | None,      None       -> None
+  | None,      Some right -> Some right
+  | Some left, None       -> Some left
+  | Some left, Some right -> Some (left + right) ;;
 
 (*======================================================================
 Part 3: Polymorphism practice
@@ -163,8 +181,12 @@ What is calc_option's function type signature?
 Now implement calc_option.
 ......................................................................*)
 
-let calc_option =
-  fun _ -> failwith "calc_option not implemented" ;;
+let calc_option (f : 'a -> 'a -> 'a) (x : 'a option) (y : 'a option) : 'a option =
+  match x, y with
+  | None,      None       -> None
+  | None,      Some right -> Some right
+  | Some left, None       -> Some left
+  | Some left, Some right -> Some (f left right) ;;
      
 (*......................................................................
 Exercise 9: Now rewrite min_option and plus_option using the higher-order
