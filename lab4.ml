@@ -193,11 +193,11 @@ Exercise 9: Now rewrite min_option and plus_option using the higher-order
 function calc_option. Call them min_option_2 and plus_option_2.
 ......................................................................*)
   
-let min_option_2 =
-  fun _ -> failwith "min_option_2 not implemented" ;;
+let min_option_2 (x : 'a option) (y : 'a option) : 'a option =
+  calc_option min x y;;
      
-let plus_option_2 =
-  fun _ -> failwith "plus_option_2 not implemented" ;;
+let plus_option_2 (x : 'a option) (y : 'a option) : 'a option =
+  calc_option ( + ) x y;;
 
 (*......................................................................
 Exercise 10: Now that we have calc_option, we can use it in other
@@ -207,8 +207,8 @@ AND of two bool options, or None if both are None. If exactly one is
 None, return the other.
 ......................................................................*)
   
-let and_option =
-  fun _ -> failwith "and_option not implemented" ;;
+let and_option (x : 'a option) (y : 'a option) : 'a option =
+  calc_option ( && ) x y;;
   
 (*......................................................................
 Exercise 11: In Lab 3, you implemented a polymorphic function zip that
@@ -230,8 +230,14 @@ that its signature has changed, which returns an appropriate option
 type in case it is called with lists of unequal length.
 ......................................................................*)
 
-let zip_opt =
-  fun _ -> failwith "zip not implemented" ;;
+let rec zip_opt (x : 'a list) (y : 'b list) : (('a * 'b) list) option =
+  match (x, y) with
+  | [], [] -> Some []
+  | xh :: xt, yh :: yt -> 
+      (match zip_opt xt yt with
+        | None -> None
+        | Some zt -> Some ((xh, yh)::zt))
+  | _, _ -> None ;;
 
 (*====================================================================
 Part 4: Factoring out None-handling
